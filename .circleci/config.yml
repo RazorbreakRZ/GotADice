@@ -59,7 +59,7 @@ jobs:
 
   docker-build:
     docker:
-      - image: cimg/python:3.10.2
+      - image: docker:dind
     steps:
       - checkout
       - run:
@@ -70,7 +70,7 @@ jobs:
 
   docker-scan:
     docker:
-      - image: cimg/python:3.10.2
+      - image: docker:dind
     steps:
       - run:
           name: install grype
@@ -83,7 +83,7 @@ jobs:
 
   docker-push:
     docker:
-      - image: cimg/python:3.10.2
+      - image: docker:dind
         auth:
           username: $DOCKERHUB_ACCESS_ID
           password: $DOCKERHUB_ACCESS_TOKEN
