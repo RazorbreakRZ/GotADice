@@ -6,53 +6,55 @@ jobs:
   backend-test: 
     docker:
       - image: cimg/python:3.10.2
-    working_directory: ~/backend
     steps:
       - checkout
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "backend/requirements.txt" }}
+            - v1-pip-dependencies-{{ checksum "backend/requirements.txt" }}
             # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
+            - v1-pip-dependencies-
       - run:
           name: install dependencies
           command: |
+            cd backend
             python3 -m venv venv
             . venv/bin/activate
             pip install -r requirements.txt
       - save_cache:
-          paths:
-            - ./venv
-          key: v1-dependencies-{{ checksum "backend/requirements.txt" }}
+          paths: [backend/venv]
+          key: v1-pip-dependencies-{{ checksum "backend/requirements.txt" }}
       - run:
-          name: Run tests
-          command: make test
+          name: Run unit tests
+          command: |
+            cd backend
+            make test
 
   backend-lint:
     docker:
       - image: cimg/python:3.10.2
-    working_directory: ~/backend
     steps:
       - checkout
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "requirements.txt" }}
+            - v1-pip-dependencies-{{ checksum "requirements.txt" }}
             # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
+            - v1-pip-dependencies-
       - run:
           name: install dependencies
           command: |
+            cd backend
             python3 -m venv venv
             . venv/bin/activate
             make install
       - save_cache:
-          paths:
-            - ./venv
-          key: v1-dependencies-{{ checksum "requirements.txt" }}
+          paths: [backend/venv]
+          key: v1-pip-dependencies-{{ checksum "requirements.txt" }}
       - run:
           working_directory: backend
           name: Run linters
-          command: make lint
+          command: |
+            cd backend
+            make lint
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
@@ -60,4 +62,4 @@ workflows:
   default: 
     jobs:
       - backend-test
-      # - backend-lint
+      - backend-lint
