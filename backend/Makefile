@@ -7,8 +7,8 @@ install:
 	pip install -r requirements.txt
 
 lint: 
-	hadolint Dockerfile
 	pylint app.py
+	hadolint Dockerfile
 
 test:
 	pytest app.py tests

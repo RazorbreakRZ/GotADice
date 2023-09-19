@@ -6,7 +6,7 @@ jobs:
   backend-test: 
     docker:
       - image: cimg/python:3.10.2
-    working_directory: backend
+    working_directory: ~/backend
     steps:
       - checkout
       - restore_cache:
@@ -26,7 +26,7 @@ jobs:
           key: v1-dependencies-{{ checksum "backend/requirements.txt" }}
       - run:
           name: Run tests
-          command: pytest app.py tests
+          command: make test
 
   backend-lint:
     docker:
