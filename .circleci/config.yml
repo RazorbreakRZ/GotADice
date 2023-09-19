@@ -46,7 +46,8 @@ jobs:
             cd backend
             python3 -m venv venv
             . venv/bin/activate
-            make install
+            pip install -r requirements.txt
+            wget https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64 -O /bin/hadolint && chmod +x /bin/hadolint
       - save_cache:
           paths: [backend/venv]
           key: v1-pip-dependencies-{{ checksum "backend/requirements.txt" }}
