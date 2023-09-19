@@ -2,6 +2,9 @@
 # See: https://circleci.com/docs/configuration-reference
 version: 2.1
 
+orbs:
+  grype: anchore/grype@0.2.0
+
 jobs:
   backend-test: 
     docker:
@@ -66,7 +69,14 @@ jobs:
           working_directory: backend
           name: build docker image
           command: |
-            make build
+            docker build -t $DOCKERHUB_ACCESS_ID/$CIRCLE_PROJECT_REPONAME:${CIRCLE_WORKFLOW_ID:0:7} .
+
+  docker-scan:
+    executor: grype/default
+    steps:
+      - grype/list-image-vulns:
+          image-name: $DOCKERHUB_ACCESS_ID/$CIRCLE_PROJECT_REPONAME:${CIRCLE_WORKFLOW_ID:0:7}
+
 
   docker-push:
     docker:
@@ -80,7 +90,7 @@ jobs:
           working_directory: backend
           name: build docker image
           command: |
-            make publish
+            docker push $DOCKERHUB_ACCESS_ID/$CIRCLE_PROJECT_REPONAME:${CIRCLE_WORKFLOW_ID:0:7}
     
   
 # Invoke jobs via workflows
@@ -90,6 +100,9 @@ workflows:
     jobs:
       - backend-test
       - backend-lint
-      - docker-build
-      # - docker-scan
-      - docker-push
+      - docker-build:
+          requires: [backend-test, backend-lint]
+      - docker-scan:
+          requires: [docker-build]
+      - docker-push:
+          requires: [docker-scan]
