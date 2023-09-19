@@ -57,6 +57,30 @@ jobs:
             . venv/bin/activate
             make lint
 
+  docker-build:
+    docker:
+      - image: cimg/python:3.10.2
+    steps:
+      - checkout
+      - run:
+          name: build docker image
+          command: |
+            make build
+
+  docker-push:
+    docker:
+      - image: cimg/python:3.10.2
+        auth:
+          username: $DOCKERHUB_ACCESS_ID
+          password: $DOCKERHUB_ACCESS_TOKEN
+    steps:
+      - checkout
+      - run:
+          name: build docker image
+          command: |
+            make publish
+    
+  
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
 workflows:
@@ -64,3 +88,6 @@ workflows:
     jobs:
       - backend-test
       - backend-lint
+      - docker-build
+      # - docker-scan
+      - docker-push
