@@ -59,9 +59,10 @@ jobs:
 
   docker-build:
     docker:
-      - image: docker:dind
+      - image: docker:24.0.6
     steps:
       - checkout
+      - setup_remote_docker
       - run:
           working_directory: backend
           name: build docker image
