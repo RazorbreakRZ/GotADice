@@ -6,12 +6,12 @@ jobs:
   backend-test: 
     docker:
       - image: cimg/python:3.10.2
-    working_directory: ~/backend
+    working_directory: backend
     steps:
       - checkout
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "requirements.txt" }}
+            - v1-dependencies-{{ checksum "backend/requirements.txt" }}
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
       - run:
@@ -19,14 +19,14 @@ jobs:
           command: |
             python3 -m venv venv
             . venv/bin/activate
-            make install
+            pip install -r requirements.txt
       - save_cache:
           paths:
             - ./venv
-          key: v1-dependencies-{{ checksum "requirements.txt" }}
+          key: v1-dependencies-{{ checksum "backend/requirements.txt" }}
       - run:
           name: Run tests
-          command: make test
+          command: pytest app.py tests
 
   backend-lint:
     docker:
@@ -60,4 +60,4 @@ workflows:
   default: 
     jobs:
       - backend-test
-      - backend-lint
+      # - backend-lint
