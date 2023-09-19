@@ -2,9 +2,6 @@
 # See: https://circleci.com/docs/configuration-reference
 version: 2.1
 
-orbs:
-  grype: anchore/grype@0.2.0
-
 jobs:
   backend-test: 
     docker:
@@ -72,11 +69,17 @@ jobs:
             docker build -t $DOCKERHUB_ACCESS_ID/$CIRCLE_PROJECT_REPONAME:${CIRCLE_WORKFLOW_ID:0:7} .
 
   docker-scan:
-    executor: grype/default
+    docker:
+      - image: cimg/python:3.10.2
     steps:
-      - grype/list-image-vulns:
-          image-name: $DOCKERHUB_ACCESS_ID/$CIRCLE_PROJECT_REPONAME:${CIRCLE_WORKFLOW_ID:0:7}
-
+      - run:
+          name: install grype
+          command: |
+            curl -s https://api.github.com/repos/anchore/grype/releases/latest | grep \"https.*grype.*linux_amd64.tar.gz\" | cut -d : -f 2,3 | tr -d \\\" | wget -qi - && tar -xvzf grype*.tar.gz grype && ./grype version
+      - run:
+          name: scan docker vulnerabilities
+          command: |
+            ./grype -f high $DOCKERHUB_ACCESS_ID/$CIRCLE_PROJECT_REPONAME:${CIRCLE_WORKFLOW_ID:0:7}
 
   docker-push:
     docker:
