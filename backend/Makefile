@@ -1,6 +1,6 @@
 setup:
 	python3 -m venv ~/.gotadice
-	source ~/.gotadice/bin/activate
+	# source ~/.gotadice/bin/activate
 
 install:
 	wget https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64 -O /bin/hadolint && chmod +x /bin/hadolint
@@ -8,7 +8,10 @@ install:
 
 lint: 
 	hadolint Dockerfile
-	pylint --disable=R,C,W1203,W1202,W1508,W1309 app.py
+	pylint app.py
+
+test:
+	pytest app.py tests
 
 debug:
 	flask run --reload

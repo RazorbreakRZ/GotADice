@@ -1,32 +1,37 @@
-from flask import Flask, jsonify
-from flask.logging import create_logger
+"""Module to read OS environment variables"""
+from os import getenv
 from random import randint
 import logging
-import os
+from flask import Flask, jsonify
+from flask.logging import create_logger
 
 app = Flask(__name__)
 
 # Setting app logger from environment variable LOG_LEVEL, if exists. Default is INFO
 # Some possible values are: NOTSET, FATAL, CRITICAL, ERROR, INFO, DEBUG
 LOG = create_logger(app)
-LOG.setLevel(logging.getLevelName(os.getenv("LOG_LEVEL", logging.INFO)))
-LOG.info(f"Logger configured as {logging.getLevelName(LOG.level)}")
+LOG.setLevel(logging.getLevelName(getenv("LOG_LEVEL", logging.getLevelName(logging.INFO))))
+LOG.info("Logger configured as %s", logging.getLevelName(LOG.level))
 
 
 @app.route("/info")
 def app_info():
-    return { 
-        "author": "RazorbeakRZ" ,
+    """This endpoint return the information of the application"""
+    response = {
+        "author": "RazorbeakRZ",
         "version": "0.0.1"
     }
+    return jsonify(response)
 
 @app.route("/roll")
 def roll_dice():
+    """This endpoint returns a random integer value from 1-6, 
+        to simulate the roll of a 6-faces dice"""
     LOG.info("Received request to roll a dice")
     dice_result = randint(1,6)
-    LOG.info(f"Generated value was: {dice_result}")
+    LOG.info("Generated value was: %d", dice_result)
     response = { "value": dice_result }
-    LOG.debug(f"Response JSON: {response}")
+    LOG.debug("Response JSON: %s", response)
     return jsonify(response)
 
-LOG.info(f"Application started and ready to serve requests")
+LOG.info("Application started and ready to serve requests")

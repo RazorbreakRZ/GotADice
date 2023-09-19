@@ -1,2 +1,3 @@
-flask
-pylint
+flask==2.3.3
+pylint==2.17.5
+pytest==7.4.2
