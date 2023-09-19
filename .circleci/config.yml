@@ -71,7 +71,7 @@ jobs:
 
   docker-scan:
     docker:
-      - image: docker:dind
+      - image: docker:24.0.6
     steps:
       - run:
           name: install grype
@@ -84,7 +84,7 @@ jobs:
 
   docker-push:
     docker:
-      - image: docker:dind
+      - image: docker:24.0.6
         auth:
           username: $DOCKERHUB_ACCESS_ID
           password: $DOCKERHUB_ACCESS_TOKEN
