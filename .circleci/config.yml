@@ -27,6 +27,7 @@ jobs:
           name: Run unit tests
           command: |
             cd backend
+            . venv/bin/activate
             make test
 
   backend-lint:
@@ -54,6 +55,7 @@ jobs:
           name: Run linters
           command: |
             cd backend
+            . venv/bin/activate
             make lint
 
 # Invoke jobs via workflows
