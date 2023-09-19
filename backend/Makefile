@@ -11,10 +11,10 @@ lint:
 	hadolint Dockerfile
 
 test:
-	pytest app.py tests
+	python -m pytest app.py tests
 
 debug:
-	flask run --reload
+	python -m flask run --reload
 
 build:
 	docker build -t razorbreak/gotadice:latest .
