@@ -59,7 +59,7 @@ jobs:
 
   docker-build:
     docker:
-      - image: docker:24.0.6
+      - image: cimg/base:current
     steps:
       - checkout
       - setup_remote_docker
@@ -71,8 +71,10 @@ jobs:
 
   docker-scan:
     docker:
-      - image: docker:24.0.6
+      - image: cimg/base:current
     steps:
+      - checkout
+      - setup_remote_docker
       - run:
           name: install grype
           command: |
@@ -84,12 +86,13 @@ jobs:
 
   docker-push:
     docker:
-      - image: docker:24.0.6
+      - image: cimg/base:current
         auth:
           username: $DOCKERHUB_ACCESS_ID
           password: $DOCKERHUB_ACCESS_TOKEN
     steps:
       - checkout
+      - setup_remote_docker
       - run:
           working_directory: backend
           name: build docker image
