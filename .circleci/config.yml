@@ -60,18 +60,11 @@ jobs:
   docker-build:
     docker:
       - image: cimg/base:current
-    steps:
-      - checkout
-      - setup_remote_docker
-      - run:
-          working_directory: backend
-          name: build docker image
-          command: |
-            docker build -t $DOCKERHUB_ACCESS_ID/${CIRCLE_PROJECT_REPONAME,,}:${CIRCLE_WORKFLOW_ID:0:7} .
-
-  docker-scan:
-    docker:
-      - image: cimg/base:current
+        auth:
+          username: $DOCKERHUB_ACCESS_ID
+          password: $DOCKERHUB_ACCESS_TOKEN
+    environment:
+      DOCKER_IMAGE_TAG: $DOCKERHUB_ACCESS_ID/${CIRCLE_PROJECT_REPONAME,,}:${CIRCLE_WORKFLOW_ID:0:7}
     steps:
       - checkout
       - setup_remote_docker
@@ -80,24 +73,19 @@ jobs:
           command: |
             curl -s https://api.github.com/repos/anchore/grype/releases/latest | grep \"https.*grype.*linux_amd64.tar.gz\" | cut -d : -f 2,3 | tr -d \\\" | wget -qi - && tar -xvzf grype*.tar.gz grype && ./grype version
       - run:
-          name: scan docker vulnerabilities
-          command: |
-            ./grype -f high $DOCKERHUB_ACCESS_ID/${CIRCLE_PROJECT_REPONAME,,}:${CIRCLE_WORKFLOW_ID:0:7}
-
-  docker-push:
-    docker:
-      - image: cimg/base:current
-        auth:
-          username: $DOCKERHUB_ACCESS_ID
-          password: $DOCKERHUB_ACCESS_TOKEN
-    steps:
-      - checkout
-      - setup_remote_docker
-      - run:
           working_directory: backend
           name: build docker image
           command: |
-            docker push $DOCKERHUB_ACCESS_ID/${CIRCLE_PROJECT_REPONAME,,}:${CIRCLE_WORKFLOW_ID:0:7}
+            docker build -t ${DOCKER_IMAGE_TAG} .
+      - run:
+          name: scan docker vulnerabilities
+          command: |
+            ./grype -f high ${DOCKER_IMAGE_TAG}
+      - run:
+          working_directory: backend
+          name: push docker image
+          command: |
+            docker push ${DOCKER_IMAGE_TAG}
     
   
 # Invoke jobs via workflows
@@ -109,7 +97,3 @@ workflows:
       - backend-lint
       - docker-build:
           requires: [backend-test, backend-lint]
-      - docker-scan:
-          requires: [docker-build]
-      - docker-push:
-          requires: [docker-scan]
