@@ -1,9 +1,9 @@
-FROM python:3.10.12-alpine
+FROM python:3-alpine
 
 WORKDIR /application
 
 COPY requirements.txt /application/
-RUN pip install -r requirements.txt --no-cache-dir
+RUN pip install --upgrade pip && pip install -r requirements.txt
 
 COPY app.py /application/
 
