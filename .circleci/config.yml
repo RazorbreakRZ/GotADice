@@ -63,8 +63,6 @@ jobs:
         auth:
           username: $DOCKERHUB_ACCESS_ID
           password: $DOCKERHUB_ACCESS_TOKEN
-    environment:
-      DOCKER_IMAGE_TAG: $DOCKERHUB_ACCESS_ID/${CIRCLE_PROJECT_REPONAME,,}:${CIRCLE_WORKFLOW_ID:0:7}
     steps:
       - checkout
       - setup_remote_docker
@@ -76,15 +74,18 @@ jobs:
           working_directory: backend
           name: build docker image
           command: |
+            DOCKER_IMAGE_TAG=$DOCKERHUB_ACCESS_ID/${CIRCLE_PROJECT_REPONAME,,}:${CIRCLE_WORKFLOW_ID:0:7}
             docker build -t ${DOCKER_IMAGE_TAG} .
       - run:
           name: scan docker vulnerabilities
           command: |
+            DOCKER_IMAGE_TAG=$DOCKERHUB_ACCESS_ID/${CIRCLE_PROJECT_REPONAME,,}:${CIRCLE_WORKFLOW_ID:0:7}
             ./grype -f high ${DOCKER_IMAGE_TAG}
       - run:
           working_directory: backend
           name: push docker image
           command: |
+            DOCKER_IMAGE_TAG=$DOCKERHUB_ACCESS_ID/${CIRCLE_PROJECT_REPONAME,,}:${CIRCLE_WORKFLOW_ID:0:7}
             docker push ${DOCKER_IMAGE_TAG}
     
   
