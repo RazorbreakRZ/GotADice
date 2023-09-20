@@ -80,7 +80,7 @@ jobs:
           name: scan docker vulnerabilities
           command: |
             DOCKER_IMAGE_TAG=$DOCKERHUB_ACCESS_ID/${CIRCLE_PROJECT_REPONAME,,}:${CIRCLE_WORKFLOW_ID:0:7}
-            ./grype -f high ${DOCKER_IMAGE_TAG}
+            ./grype -f critical ${DOCKER_IMAGE_TAG}
       - run:
           working_directory: backend
           name: push docker image

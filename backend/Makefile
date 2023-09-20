@@ -4,7 +4,8 @@ setup:
 
 install:
 	pip install -r requirements.txt
-	wget https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64 -O hadolint && chmod +x hadolint
+	wget https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64 -O hadolint && chmod +x hadolint && ./hadolint --version
+	curl -s https://api.github.com/repos/anchore/grype/releases/latest | grep \"https.*grype.*linux_amd64.tar.gz\" | cut -d : -f 2,3 | tr -d \\\" | wget -qi - && tar -xvzf grype*.tar.gz grype && rm grype*.tar.gz && ./grype version
 
 lint: 
 	python -m pylint app.py
@@ -17,9 +18,12 @@ debug:
 	python -m flask run --reload
 
 build:
-	docker build -t razorbreak/gotadice:latest .
+	docker build -t razorbreak/gotadice:devel .
+
+scan:
+	./grype -f critical razorbreak/gotadice:devel
 
 publish:
-	docker push razorbreak/gotadice:latest
+	docker push razorbreak/gotadice:devel
 
-build-and-publish: build publish
+build-scan-publish: build scan publish

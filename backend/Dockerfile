@@ -3,7 +3,7 @@ FROM python:3-alpine
 WORKDIR /application
 
 COPY requirements.txt /application/
-RUN pip install --upgrade pip && pip install -r requirements.txt
+RUN pip install -r requirements.txt --no-cache-dir
 
 COPY app.py /application/
 
