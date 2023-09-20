@@ -57,7 +57,7 @@ jobs:
             . venv/bin/activate
             make lint
 
-  docker-build:
+  docker-build-scan-push:
     docker:
       - image: cimg/base:current
         auth:
@@ -95,5 +95,5 @@ workflows:
     jobs:
       - backend-test
       - backend-lint
-      - docker-build:
+      - docker-build-scan-push:
           requires: [backend-test, backend-lint]
