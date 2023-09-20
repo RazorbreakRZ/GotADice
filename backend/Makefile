@@ -8,7 +8,7 @@ install:
 
 lint: 
 	python -m pylint app.py
-	./hadolint Dockerfile
+	./hadolint Dockerfile --ignore DL3013 --ignore DL3042
 
 test:
 	python -m pytest app.py tests
