@@ -127,6 +127,7 @@ jobs:
           name: build docker image
           command: |
             DOCKER_IMAGE_TAG=$DOCKERHUB_ACCESS_ID/${CIRCLE_PROJECT_REPONAME,,}/frontend:${CIRCLE_WORKFLOW_ID:0:7}
+            sed -i "s/%HASH%/${CIRCLE_WORKFLOW_ID:0:7}/g" app.py
             docker build -t ${DOCKER_IMAGE_TAG} .
       - run:
           name: scan docker vulnerabilities
@@ -158,6 +159,7 @@ jobs:
           name: build docker image
           command: |
             DOCKER_IMAGE_TAG=$DOCKERHUB_ACCESS_ID/${CIRCLE_PROJECT_REPONAME,,}/backend:${CIRCLE_WORKFLOW_ID:0:7}
+            sed -i "s/%HASH%/${CIRCLE_WORKFLOW_ID:0:7}/g" app.py
             docker build -t ${DOCKER_IMAGE_TAG} .
       - run:
           name: scan docker vulnerabilities
