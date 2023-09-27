@@ -126,19 +126,19 @@ jobs:
           working_directory: frontend
           name: build docker image
           command: |
-            DOCKER_IMAGE_TAG=$DOCKERHUB_ACCESS_ID/${CIRCLE_PROJECT_REPONAME,,}/frontend:${CIRCLE_WORKFLOW_ID:0:7}
+            DOCKER_IMAGE_TAG=$DOCKERHUB_ACCESS_ID/${CIRCLE_PROJECT_REPONAME,,}-frontend:${CIRCLE_WORKFLOW_ID:0:7}
             sed -i "s/%HASH%/${CIRCLE_WORKFLOW_ID:0:7}/g" app.py
             docker build -t ${DOCKER_IMAGE_TAG} .
       - run:
           name: scan docker vulnerabilities
           command: |
-            DOCKER_IMAGE_TAG=$DOCKERHUB_ACCESS_ID/${CIRCLE_PROJECT_REPONAME,,}/frontend:${CIRCLE_WORKFLOW_ID:0:7}
+            DOCKER_IMAGE_TAG=$DOCKERHUB_ACCESS_ID/${CIRCLE_PROJECT_REPONAME,,}-frontend:${CIRCLE_WORKFLOW_ID:0:7}
             ./grype -f critical ${DOCKER_IMAGE_TAG}
       - run:
           working_directory: frontend
           name: push docker image
           command: |
-            DOCKER_IMAGE_TAG=$DOCKERHUB_ACCESS_ID/${CIRCLE_PROJECT_REPONAME,,}/frontend:${CIRCLE_WORKFLOW_ID:0:7}
+            DOCKER_IMAGE_TAG=$DOCKERHUB_ACCESS_ID/${CIRCLE_PROJECT_REPONAME,,}-frontend:${CIRCLE_WORKFLOW_ID:0:7}
             echo $DOCKERHUB_ACCESS_TOKEN | docker login -u $DOCKERHUB_ACCESS_ID --password-stdin
             docker push ${DOCKER_IMAGE_TAG}
   backend-docker-build-scan-push:
@@ -158,19 +158,19 @@ jobs:
           working_directory: backend
           name: build docker image
           command: |
-            DOCKER_IMAGE_TAG=$DOCKERHUB_ACCESS_ID/${CIRCLE_PROJECT_REPONAME,,}/backend:${CIRCLE_WORKFLOW_ID:0:7}
+            DOCKER_IMAGE_TAG=$DOCKERHUB_ACCESS_ID/${CIRCLE_PROJECT_REPONAME,,}-backend:${CIRCLE_WORKFLOW_ID:0:7}
             sed -i "s/%HASH%/${CIRCLE_WORKFLOW_ID:0:7}/g" app.py
             docker build -t ${DOCKER_IMAGE_TAG} .
       - run:
           name: scan docker vulnerabilities
           command: |
-            DOCKER_IMAGE_TAG=$DOCKERHUB_ACCESS_ID/${CIRCLE_PROJECT_REPONAME,,}/backend:${CIRCLE_WORKFLOW_ID:0:7}
+            DOCKER_IMAGE_TAG=$DOCKERHUB_ACCESS_ID/${CIRCLE_PROJECT_REPONAME,,}-backend:${CIRCLE_WORKFLOW_ID:0:7}
             ./grype -f critical ${DOCKER_IMAGE_TAG}
       - run:
           working_directory: backend
           name: push docker image
           command: |
-            DOCKER_IMAGE_TAG=$DOCKERHUB_ACCESS_ID/${CIRCLE_PROJECT_REPONAME,,}/backend:${CIRCLE_WORKFLOW_ID:0:7}
+            DOCKER_IMAGE_TAG=$DOCKERHUB_ACCESS_ID/${CIRCLE_PROJECT_REPONAME,,}-backend:${CIRCLE_WORKFLOW_ID:0:7}
             echo $DOCKERHUB_ACCESS_TOKEN | docker login -u $DOCKERHUB_ACCESS_ID --password-stdin
             docker push ${DOCKER_IMAGE_TAG}
     
