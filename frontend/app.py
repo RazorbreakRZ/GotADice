@@ -1,6 +1,5 @@
 """Module to read OS environment variables"""
 from os import getenv
-from random import randint
 import logging
 from flask import Flask, jsonify, render_template
 from flask.logging import create_logger
@@ -27,15 +26,18 @@ LOG.info("Backend url configure as: [%s]", appConfig.get("backendUrl"))
 
 @app.route("/info")
 def frontend_info_app():
+    """ This endpoint returns a JSON with useful information about the release of the project """
     response = appInfo
     return jsonify(response)
 
 @app.route("/")
 def frontend_dice_index():
+    """ This endpoint returns the generated index.html from the templates folder """
     return render_template('dice-index.html')
 
 @app.route("/dice-configuration.js")
 def frontend_dice_configuration_js():
+    """ This endpoint returns the generated configuration JS from the templates folder """
     return render_template('dice-configuration.js',backendUrl=appConfig.get("backendUrl"))
 
 LOG.info("Application started and ready to serve requests")
