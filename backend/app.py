@@ -13,14 +13,17 @@ LOG = create_logger(app)
 LOG.setLevel(logging.getLevelName(getenv("LOG_LEVEL", logging.getLevelName(logging.INFO))))
 LOG.info("Logger configured as %s", logging.getLevelName(LOG.level))
 
+appInfo = {
+    "author": "RazorbeakRZ",
+    "project": "GotADice Backend",
+    "version": "1.0.0",
+    "hash": "%HASH%"
+}
 
 @app.route("/info")
 def app_info():
     """This endpoint return the information of the application"""
-    response = {
-        "author": "RazorbeakRZ",
-        "version": "0.0.1"
-    }
+    response = appInfo
     return jsonify(response)
 
 @app.route("/roll")

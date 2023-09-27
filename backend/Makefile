@@ -15,15 +15,15 @@ test:
 	python -m pytest app.py tests
 
 debug:
-	python -m flask run --reload
+	python -m flask run -p 5001 --reload
 
 build:
-	docker build -t razorbreak/gotadice:devel .
+	docker build -t razorbreak/gotadice-backend:devel .
 
 scan:
-	./grype -f critical razorbreak/gotadice:devel
+	./grype -f critical razorbreak/gotadice-backend:devel
 
 publish:
-	docker push razorbreak/gotadice:devel
+	docker push razorbreak/gotadice-backend:devel
 
 build-scan-publish: build scan publish
