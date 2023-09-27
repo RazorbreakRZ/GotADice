@@ -3,6 +3,32 @@
 version: 2.1
 
 jobs:
+  frontend-test: 
+    docker:
+      - image: cimg/python:3.10.2
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-pip-dependencies-{{ checksum "frontend/requirements.txt" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-pip-dependencies-
+      - run:
+          working_directory: frontend
+          name: install dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            make install
+      - save_cache:
+          paths: [frontend/venv]
+          key: v1-pip-dependencies-{{ checksum "frontend/requirements.txt" }}
+      - run:
+          working_directory: frontend
+          name: Run unit tests
+          command: |
+            . venv/bin/activate
+            make test
   backend-test: 
     docker:
       - image: cimg/python:3.10.2
@@ -30,6 +56,32 @@ jobs:
             . venv/bin/activate
             make test
 
+  frontend-lint:
+    docker:
+      - image: cimg/python:3.10.2
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-pip-dependencies-{{ checksum "frontend/requirements.txt" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-pip-dependencies-
+      - run:
+          working_directory: frontend
+          name: install dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            make install
+      - save_cache:
+          paths: [frontend/venv]
+          key: v1-pip-dependencies-{{ checksum "frontend/requirements.txt" }}
+      - run:
+          working_directory: frontend
+          name: Run linters
+          command: |
+            . venv/bin/activate
+            make lint
   backend-lint:
     docker:
       - image: cimg/python:3.10.2
@@ -57,6 +109,37 @@ jobs:
             . venv/bin/activate
             make lint
 
+  frontend-docker-build-scan-push:
+    docker:
+      - image: cimg/base:current
+        auth:
+          username: $DOCKERHUB_ACCESS_ID
+          password: $DOCKERHUB_ACCESS_TOKEN
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: install grype
+          command: |
+            curl -s https://api.github.com/repos/anchore/grype/releases/latest | grep \"https.*grype.*linux_amd64.tar.gz\" | cut -d : -f 2,3 | tr -d \\\" | wget -qi - && tar -xvzf grype*.tar.gz grype && ./grype version
+      - run:
+          working_directory: frontend
+          name: build docker image
+          command: |
+            DOCKER_IMAGE_TAG=$DOCKERHUB_ACCESS_ID/${CIRCLE_PROJECT_REPONAME,,}/frontend:${CIRCLE_WORKFLOW_ID:0:7}
+            docker build -t ${DOCKER_IMAGE_TAG} .
+      - run:
+          name: scan docker vulnerabilities
+          command: |
+            DOCKER_IMAGE_TAG=$DOCKERHUB_ACCESS_ID/${CIRCLE_PROJECT_REPONAME,,}/frontend:${CIRCLE_WORKFLOW_ID:0:7}
+            ./grype -f critical ${DOCKER_IMAGE_TAG}
+      - run:
+          working_directory: frontend
+          name: push docker image
+          command: |
+            DOCKER_IMAGE_TAG=$DOCKERHUB_ACCESS_ID/${CIRCLE_PROJECT_REPONAME,,}/frontend:${CIRCLE_WORKFLOW_ID:0:7}
+            echo $DOCKERHUB_ACCESS_TOKEN | docker login -u $DOCKERHUB_ACCESS_ID --password-stdin
+            docker push ${DOCKER_IMAGE_TAG}
   backend-docker-build-scan-push:
     docker:
       - image: cimg/base:current
@@ -74,18 +157,18 @@ jobs:
           working_directory: backend
           name: build docker image
           command: |
-            DOCKER_IMAGE_TAG=$DOCKERHUB_ACCESS_ID/${CIRCLE_PROJECT_REPONAME,,}:${CIRCLE_WORKFLOW_ID:0:7}
+            DOCKER_IMAGE_TAG=$DOCKERHUB_ACCESS_ID/${CIRCLE_PROJECT_REPONAME,,}/backend:${CIRCLE_WORKFLOW_ID:0:7}
             docker build -t ${DOCKER_IMAGE_TAG} .
       - run:
           name: scan docker vulnerabilities
           command: |
-            DOCKER_IMAGE_TAG=$DOCKERHUB_ACCESS_ID/${CIRCLE_PROJECT_REPONAME,,}:${CIRCLE_WORKFLOW_ID:0:7}
+            DOCKER_IMAGE_TAG=$DOCKERHUB_ACCESS_ID/${CIRCLE_PROJECT_REPONAME,,}/backend:${CIRCLE_WORKFLOW_ID:0:7}
             ./grype -f critical ${DOCKER_IMAGE_TAG}
       - run:
           working_directory: backend
           name: push docker image
           command: |
-            DOCKER_IMAGE_TAG=$DOCKERHUB_ACCESS_ID/${CIRCLE_PROJECT_REPONAME,,}:${CIRCLE_WORKFLOW_ID:0:7}
+            DOCKER_IMAGE_TAG=$DOCKERHUB_ACCESS_ID/${CIRCLE_PROJECT_REPONAME,,}/backend:${CIRCLE_WORKFLOW_ID:0:7}
             echo $DOCKERHUB_ACCESS_TOKEN | docker login -u $DOCKERHUB_ACCESS_ID --password-stdin
             docker push ${DOCKER_IMAGE_TAG}
     
@@ -95,7 +178,11 @@ jobs:
 workflows:
   default: 
     jobs:
+      - frontend-test
       - backend-test
+      - frontend-lint
       - backend-lint
+      - frontend-docker-build-scan-push:
+          requires: [frontend-test, frontend-lint]
       - backend-docker-build-scan-push:
           requires: [backend-test, backend-lint]
