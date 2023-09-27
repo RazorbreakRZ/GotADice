@@ -25,6 +25,11 @@ appConfig = {
 }
 LOG.info("Backend url configure as: [%s]", appConfig.get("backendUrl"))
 
+@app.route("/info")
+def frontend_info_app():
+    response = appInfo
+    return jsonify(response)
+
 @app.route("/")
 def frontend_dice_index():
     return render_template('dice-index.html')
