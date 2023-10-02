@@ -18,12 +18,15 @@ debug:
 	python -m flask run -p 5001 --reload
 
 build:
-	docker build -t razorbreak/gotadice-backend:devel .
+	docker build -t razorbreak/gotadice-backend:latest .
 
 scan:
-	./grype -f critical razorbreak/gotadice-backend:devel
+	./grype -f critical razorbreak/gotadice-backend:latest
 
 publish:
-	docker push razorbreak/gotadice-backend:devel
+	docker push razorbreak/gotadice-backend:latest
 
 build-scan-publish: build scan publish
+
+deploy: build
+	kubectl apply -f deployment.yml

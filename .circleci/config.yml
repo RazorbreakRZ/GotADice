@@ -174,7 +174,36 @@ jobs:
             echo $DOCKERHUB_ACCESS_TOKEN | docker login -u $DOCKERHUB_ACCESS_ID --password-stdin
             docker push ${DOCKER_IMAGE_TAG}
     
-  
+  frontend-eks-deploy:
+    docker:
+      - image: cimg/python:3.10.2
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update aws-cli
+      - run:
+          working_directory: frontend
+          name: Check AWS CLI
+          command: |
+            aws --version
+            aws eks list-clusters
+  backend-eks-deploy:
+    docker:
+      - image: cimg/python:3.10.2
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update aws-cli
+      - run:
+          working_directory: backend
+          name: Check AWS CLI
+          command: |
+            aws --version
+            aws eks list-clusters
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
 workflows:
@@ -188,3 +217,7 @@ workflows:
           requires: [frontend-test, frontend-lint]
       - backend-docker-build-scan-push:
           requires: [backend-test, backend-lint]
+      - frontend-eks-deploy:
+          requires: [frontend-docker-build-scan-push]
+      - backend-eks-deploy:
+          requires: [backend-docker-build-scan-push]
