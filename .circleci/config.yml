@@ -182,7 +182,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add --update aws-cli
+            pip install aws-cli
       - run:
           working_directory: frontend
           name: Check AWS CLI
@@ -197,7 +197,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add --update aws-cli
+            pip install aws-cli
       - run:
           working_directory: backend
           name: Check AWS CLI
