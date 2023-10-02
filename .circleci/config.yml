@@ -176,13 +176,15 @@ jobs:
     
   frontend-eks-deploy:
     docker:
-      - image: cimg/python:3.10.2
+      - image: cimg/base:current
     steps:
       - checkout
       - run:
           name: Install dependencies
           command: |
-            pip install awscli
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
       - run:
           working_directory: frontend
           name: Check AWS CLI
@@ -191,13 +193,15 @@ jobs:
             aws eks list-clusters
   backend-eks-deploy:
     docker:
-      - image: cimg/python:3.10.2
+      - image: cimg/base:current
     steps:
       - checkout
       - run:
           name: Install dependencies
           command: |
-            pip install awscli
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
       - run:
           working_directory: backend
           name: Check AWS CLI
