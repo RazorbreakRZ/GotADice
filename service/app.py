@@ -1,5 +1,6 @@
 """Module to read OS environment variables"""
 from os import getenv
+from random import randint
 import logging
 from flask import Flask, jsonify, render_template
 from flask.logging import create_logger
@@ -14,19 +15,14 @@ LOG.info("Logger configured as %s", logging.getLevelName(LOG.level))
 
 appInfo = {
     "author": "RazorbeakRZ",
-    "project": "GotADice Frontend",
+    "project": "GotADice",
     "version": "1.0.0",
     "hash": "%HASH%"
 }
 
-appConfig = {
-    "backendUrl": getenv("BACKEND_URL", "http://localhost:5001")
-}
-LOG.info("Backend url configure as: [%s]", appConfig.get("backendUrl"))
-
 @app.route("/info")
-def frontend_info_app():
-    """ This endpoint returns a JSON with useful information about the release of the project """
+def app_info():
+    """This endpoint return the information of the application"""
     response = appInfo
     return jsonify(response)
 
@@ -35,9 +31,15 @@ def frontend_dice_index():
     """ This endpoint returns the generated index.html from the templates folder """
     return render_template('dice-index.html')
 
-@app.route("/dice-configuration.js")
-def frontend_dice_configuration_js():
-    """ This endpoint returns the generated configuration JS from the templates folder """
-    return render_template('dice-configuration.js',backendUrl=appConfig.get("backendUrl"))
+@app.route("/roll")
+def roll_dice():
+    """This endpoint returns a random integer value from 1-6, 
+        to simulate the roll of a 6-faces dice"""
+    LOG.info("Received request to roll a dice")
+    dice_result = randint(1,6)
+    LOG.info("Generated value was: %d", dice_result)
+    response = { "value": dice_result }
+    LOG.debug("Response JSON: %s", response)
+    return jsonify(response)
 
 LOG.info("Application started and ready to serve requests")
