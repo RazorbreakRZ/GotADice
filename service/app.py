@@ -29,7 +29,7 @@ def app_info():
 @app.route("/")
 def frontend_dice_index():
     """ This endpoint returns the generated index.html from the templates folder """
-    return render_template('dice-index.html')
+    return render_template('index.html')
 
 @app.route("/roll")
 def roll_dice():

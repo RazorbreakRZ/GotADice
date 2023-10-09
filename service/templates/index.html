@@ -2,18 +2,18 @@
 <html lang="en">
 
 <head>
+    <!-- Project obtained from: https://codesandbox.io/s/animated-3d-dice-roll-oh9ub?file=/index.html:0-1643 -->
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Dice Roll</title>
-    <link rel="stylesheet" href="./static/dice-styles.css" />
+    <link rel="stylesheet" href="./static/styles.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="./dice-configuration.js"></script>
 </head>
 
 <body>
     <div class="dice">
-        <ol class="die-list" data-roll="1" id="die-1">
+        <ol class="die-list even-roll" data-roll="1" id="die-1">
             <li class="die-item" data-side="1">
                 <span class="dot"></span>
             </li>
@@ -48,9 +48,10 @@
                 <span class="dot"></span>
             </li>
         </ol>
+
     </div>
-    <button type="button" id="roll-button">Roll it!</button>
-    <script src="./static/dice-control.js"></script>
+    <button type="button" id="roll-button">Roll Dice</button>
+    <script src="./static/control.js"></script>
 </body>
 
 </html>

@@ -1,1 +1,0 @@
-const backendUrl = "{{ backendUrl }}/roll";
