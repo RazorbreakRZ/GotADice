@@ -5,7 +5,9 @@ WORKDIR /application
 COPY requirements.txt /application/
 RUN pip install -r requirements.txt --no-cache-dir
 
-COPY app.py /application/
+COPY app.py .
+COPY static .
+COPY templates .
 
 EXPOSE 5000
 
