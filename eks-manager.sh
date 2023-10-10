@@ -1,6 +1,6 @@
 #!/bin/bash
 
-REGION="us-west-2"
+REGION="eu-west-1"
 CLUSTER_VERSION="1.27"
 CLUSTER_NAME="udacity"
 CLUSTER_SIZE=2

@@ -1,36 +1,37 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: gotadice-backend
+  name: gotadice
   labels:
-    app: gotadice-backend
+    app: gotadice
     ci-hash: latest
 spec:
-  replicas: 1
+  replicas: 4
   selector:
     matchLabels:
-      app: gotadice-backend
+      app: gotadice
   template:
     metadata:
       labels:
-        app: gotadice-backend
+        app: gotadice
         ci-hash: latest
     spec:
       containers:
-      - name: gotadice-backend
-        image: razorbreak/gotadice-backend:latest
+      - name: gotadice
+        image: razorbreak/gotadice:latest
         ports:
         - containerPort: 5000
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: gotadice-backend
+  name: gotadice
   labels:
-    app: gotadice-backend
+    app: gotadice
 spec:
   type: LoadBalancer
   ports:
-  - port: 5000
+  - port: 80
+    targetPort: 5000
   selector:
-    app: gotadice-backend
+    app: gotadice

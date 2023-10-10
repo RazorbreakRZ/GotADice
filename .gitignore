@@ -2,3 +2,4 @@ venv/
 *.pyc
 hadolint
 grype
+kubectl
