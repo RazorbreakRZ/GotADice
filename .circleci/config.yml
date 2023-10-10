@@ -105,8 +105,9 @@ jobs:
           working_directory: service
           name: Check AWS CLI
           command: |
-            aws eks list-clusters
-            aws eks update-kubeconfig --name udacity
+            CLUSTER_LIST=$(aws eks list-clusters)
+            echo ${CLUSTER_LIST}
+            aws eks update-kubeconfig --name $(echo $CLUSTER_LIST | jq -r .clusters[0])
             sed -i "s/latest/${CIRCLE_WORKFLOW_ID:0:7}/g" deployment.yml
             ./kubectl apply -f deployment.yml
 
