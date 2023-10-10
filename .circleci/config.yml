@@ -123,11 +123,12 @@ jobs:
             aws eks update-kubeconfig --name $(echo $CLUSTER_LIST | jq -r .clusters[0])
             sed -i "s/latest/${CIRCLE_WORKFLOW_ID:0:7}/g" deployment.yml
             ./kubectl apply -f deployment.yml
-      # - run:
-      #     working_directory: service
-      #     name: Validate EKS deployment
-      #     command: |
-      #       PUBLIC_SERVICE_ENDPOINT=$(kubectl )
+      - run:
+          working_directory: service
+          name: Validate EKS deployment
+          command: |
+            PUBLIC_SERVICE_URL=$(./kubectl get service/gotadice -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+            chmod +x validate-service.sh && ./validate-service.sh $PUBLIC_SERVICE_URL
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
