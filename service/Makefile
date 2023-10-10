@@ -29,5 +29,11 @@ publish:
 
 build-scan-publish: build scan publish
 
+validate-service: build
+	docker run --name gotadice -d -p 5000:5000 razorbreak/gotadice:latest
+	@sleep 10
+	chmod +x validate-service.sh && ./validate-service.sh localhost:5000
+	docker rm -f gotadice
+
 deploy: build
 	kubectl apply -f deployment.yml
