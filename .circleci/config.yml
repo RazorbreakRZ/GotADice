@@ -108,7 +108,7 @@ jobs:
             aws eks list-clusters
             aws eks update-kubeconfig --name udacity
             sed -i "s/latest/${CIRCLE_WORKFLOW_ID:0:7}/g" deployment.yml
-            kubectl apply -f deployment.yml
+            ./kubectl apply -f deployment.yml
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
