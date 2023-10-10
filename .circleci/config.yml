@@ -106,7 +106,7 @@ jobs:
           name: Check AWS CLI
           command: |
             aws eks list-clusters
-            aws eks update-kubeconfig
+            aws eks update-kubeconfig --name udacity
             sed -i "s/latest/${CIRCLE_WORKFLOW_ID:0:7}/g" deployment.yml
             kubectl apply -f deployment.yml
 
