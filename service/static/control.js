@@ -25,4 +25,19 @@ function getRandomNumber() {
     return value;
 }
 
+function getAppInfo() {
+    $.get(
+        {
+            url: "/info",
+            success: function (data) {
+                version = data["version"] + "." + data["hash"];
+            },
+            async: false
+        }
+    )
+    console.log(version);
+    return version;
+}
+
+document.getElementById("version").innerText = "version: " + getAppInfo();
 document.getElementById("roll-button").addEventListener("click", rollDice);

@@ -17,6 +17,10 @@ body {
     width: 100%;
 }
 
+.version {
+    color: azure;
+}
+
 .dice {
     align-items: center;
     display: grid;
