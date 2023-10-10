@@ -96,17 +96,20 @@ jobs:
     steps:
       - checkout
       - run:
+          working_directory: service
           name: Install dependencies
           command: |
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip awscliv2.zip
-            sudo ./aws/install
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && unzip awscliv2.zip && sudo ./aws/install &&  aws --version
+            curl -LO https://dl.k8s.io/release/v1.27.2/bin/linux/amd64/kubectl && chmod +x kubectl && ./kubectl version --client
       - run:
           working_directory: service
           name: Check AWS CLI
           command: |
-            aws --version
             aws eks list-clusters
+            aws eks update-kubeconfig
+            sed -i "s/latest/${CIRCLE_WORKFLOW_ID:0:7}/g" deployment.yml
+            kubectl apply -f deployment.yml
+
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
 workflows:
