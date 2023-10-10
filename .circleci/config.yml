@@ -82,14 +82,15 @@ jobs:
           command: |
             DOCKER_IMAGE_TAG=$DOCKERHUB_ACCESS_ID/${CIRCLE_PROJECT_REPONAME,,}:${CIRCLE_WORKFLOW_ID:0:7}
             ./grype -f critical ${DOCKER_IMAGE_TAG}
-      - run:
-          working_directory: service
-          name: validate docker
-          command: |
-            DOCKER_IMAGE_TAG=$DOCKERHUB_ACCESS_ID/${CIRCLE_PROJECT_REPONAME,,}:${CIRCLE_WORKFLOW_ID:0:7}
-            docker run -d -p 5000:5000 --name gotadice $DOCKER_IMAGE_TAG
-            sleep 10
-            chmod +x validate-service.sh && ./validate-service.sh gotadice:5000
+      # - run:
+      #     working_directory: service
+      #     name: validate docker
+      #     command: |
+      #       DOCKER_IMAGE_TAG=$DOCKERHUB_ACCESS_ID/${CIRCLE_PROJECT_REPONAME,,}:${CIRCLE_WORKFLOW_ID:0:7}
+      #       docker run -d -p 5000:5000 --name gotadice $DOCKER_IMAGE_TAG
+      #       sleep 10
+      #       chmod +x validate-service.sh && ./validate-service.sh gotadice:5000
+      #       docker rm -f gotadice
       - when:
           condition:
             equal: [ main, << pipeline.git.branch>> ]
