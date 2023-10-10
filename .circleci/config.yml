@@ -84,12 +84,24 @@ jobs:
             ./grype -f critical ${DOCKER_IMAGE_TAG}
       - run:
           working_directory: service
-          name: push docker image
+          name: validate docker
           command: |
             DOCKER_IMAGE_TAG=$DOCKERHUB_ACCESS_ID/${CIRCLE_PROJECT_REPONAME,,}:${CIRCLE_WORKFLOW_ID:0:7}
-            echo $DOCKERHUB_ACCESS_TOKEN | docker login -u $DOCKERHUB_ACCESS_ID --password-stdin
-            docker push ${DOCKER_IMAGE_TAG}
-    
+            docker run -d -p 5000:5000 --name gotadice $DOCKER_IMAGE_TAG
+            sleep 10
+            chmod +x validate-service.sh && ./validate-service.sh localhost:5000
+      - when:
+          condition:
+            equal: [ main, << pipeline.git.branch>> ]
+          steps:
+            - run:
+                working_directory: service
+                name: push docker image
+                command: |
+                  DOCKER_IMAGE_TAG=$DOCKERHUB_ACCESS_ID/${CIRCLE_PROJECT_REPONAME,,}:${CIRCLE_WORKFLOW_ID:0:7}
+                  echo $DOCKERHUB_ACCESS_TOKEN | docker login -u $DOCKERHUB_ACCESS_ID --password-stdin
+                  docker push ${DOCKER_IMAGE_TAG}
+          
   service-eks-deploy:
     docker:
       - image: cimg/base:current
@@ -103,13 +115,18 @@ jobs:
             curl -LO https://dl.k8s.io/release/v1.27.2/bin/linux/amd64/kubectl && chmod +x kubectl && ./kubectl version --client
       - run:
           working_directory: service
-          name: Check AWS CLI
+          name: Update EKS deployment
           command: |
             CLUSTER_LIST=$(aws eks list-clusters)
             echo ${CLUSTER_LIST}
             aws eks update-kubeconfig --name $(echo $CLUSTER_LIST | jq -r .clusters[0])
             sed -i "s/latest/${CIRCLE_WORKFLOW_ID:0:7}/g" deployment.yml
             ./kubectl apply -f deployment.yml
+      # - run:
+      #     working_directory: service
+      #     name: Validate EKS deployment
+      #     command: |
+      #       PUBLIC_SERVICE_ENDPOINT=$(kubectl )
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
@@ -122,3 +139,6 @@ workflows:
           requires: [service-test, service-lint]
       - service-eks-deploy:
           requires: [service-docker-build-scan-push]
+          filters:
+            branches: 
+              only: [main]
