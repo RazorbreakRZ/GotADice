@@ -42,4 +42,7 @@ def roll_dice():
     LOG.debug("Response JSON: %s", response)
     return jsonify(response)
 
+def extra_function_to_test_lintin():
+    print("Do nothing here")
+
 LOG.info("Application started and ready to serve requests")
