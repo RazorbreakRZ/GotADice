@@ -53,6 +53,8 @@ Then deploy and auto-configure a small sandbox cluster you can run the provided 
 ```bash
 # To create a new cluster named 'udacity' with 2 nodes in 'eu-west-1' region and version '1.27':
 ./eks-manager.sh create
+# To cleanup resources:
+./eks-manager.sh cleanup
 # And to delete it:
 ./eks-manager.sh delete
 ```
@@ -60,3 +62,6 @@ To prevent any kind of stucked resource, remember to cleanup the cluster resourc
 
 The `make install` will also download the kubectl application locally to the project folder. This way the version will match the ControlPlane one of K8s.
 
+## Useful links
+- DockerHub image location: https://hub.docker.com/r/razorbreak/gotadice/tags
+- CircleCI pipeline: https://app.circleci.com/pipelines/github/RazorbreakRZ/GotADice
