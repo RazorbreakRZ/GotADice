@@ -11,10 +11,13 @@ case $1 in
     create)
         eksctl create cluster -n $CLUSTER_NAME --tags project=$PROJECT_NAME --region $REGION --nodes $CLUSTER_SIZE --node-type $CLUSTER_INSTANCE_TYPE --version=$CLUSTER_VERSION
     ;;
+    cleanup)
+        ./service/kubectl delete -f service/deployment.yml
+    ;;
     delete)
         eksctl delete cluster -n $CLUSTER_NAME --region $REGION
     ;;
     *)
-        echo "Invalid option \"$1\". Valid ones are: create | delete"
+        echo "Invalid option \"$1\". Valid ones are: create | cleanup | delete"
     ;;
 esac
